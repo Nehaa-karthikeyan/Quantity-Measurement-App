@@ -2,37 +2,39 @@ package com.bridgelabz;
 
 public class QuantityMeasurementApp {
 
-    // Inner class to represent Feet measurement
-    public static class Feet {
+    // ENUM for Units
+    public enum LengthUnit {
+        FEET(1.0),       // Base unit = Feet
+        INCH(1.0 / 12);  // 1 inch = 1/12 feet
 
-        private final double value;
+        private final double conversionFactor;
 
-        public Feet(double value) {
-            this.value = value;
+        LengthUnit(double conversionFactor) {
+            this.conversionFactor = conversionFactor;
         }
 
-        @Override
-        public boolean equals(Object obj) {
-
-            if (this == obj)
-                return true;
-
-            if (obj == null || getClass() != obj.getClass())
-                return false;
-
-            Feet other = (Feet) obj;
-
-            return Double.compare(this.value, other.value) == 0;
+        public double getConversionFactor() {
+            return conversionFactor;
         }
     }
 
-    // Inner class to represent Inches measurement
-    public static class Inches {
+    // Generic Length Class
+    public static class Length {
 
         private final double value;
+        private final LengthUnit unit;
 
-        public Inches(double value) {
+        public Length(double value, LengthUnit unit) {
+            if (unit == null)
+                throw new IllegalArgumentException("Unit cannot be null");
+
             this.value = value;
+            this.unit = unit;
+        }
+
+        // Convert everything to FEET (base unit)
+        private double toBaseUnit() {
+            return value * unit.getConversionFactor();
         }
 
         @Override
@@ -44,9 +46,9 @@ public class QuantityMeasurementApp {
             if (obj == null || getClass() != obj.getClass())
                 return false;
 
-            Inches other = (Inches) obj;
+            Length other = (Length) obj;
 
-            return Double.compare(this.value, other.value) == 0;
+            return Double.compare(this.toBaseUnit(), other.toBaseUnit()) == 0;
         }
     }
 }
