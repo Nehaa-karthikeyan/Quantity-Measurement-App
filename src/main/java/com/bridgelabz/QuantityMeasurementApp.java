@@ -111,6 +111,33 @@ public class QuantityMeasurementApp {
             // Return new Length object (immutability preserved)
             return new Length(resultValue, this.unit);
         }
+        // ===============================
+// UC7: ADD WITH TARGET UNIT
+// ===============================
+        public Length add(Length other, LengthUnit targetUnit) {
+
+            if (other == null)
+                throw new IllegalArgumentException("Second operand cannot be null");
+
+            if (targetUnit == null)
+                throw new IllegalArgumentException("Target unit cannot be null");
+
+            if (!Double.isFinite(this.value) || !Double.isFinite(other.value))
+                throw new IllegalArgumentException("Values must be finite");
+
+            // Convert both to base unit (feet)
+            double thisInBase = this.toBaseUnit();
+            double otherInBase = other.toBaseUnit();
+
+            // Add in base unit
+            double sumInBase = thisInBase + otherInBase;
+
+            // Convert to explicitly specified target unit
+            double resultValue = sumInBase / targetUnit.getConversionFactor();
+
+            // Return new Length object in target unit
+            return new Length(resultValue, targetUnit);
+        }
 
         // Optional static overloaded add
         public static Length add(Length first, Length second) {
