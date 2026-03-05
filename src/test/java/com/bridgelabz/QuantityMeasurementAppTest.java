@@ -173,4 +173,15 @@ public class QuantityMeasurementAppTest {
         assertThrows(IllegalArgumentException.class,
                 () -> new Quantity<>(Double.NaN, LengthUnit.FEET));
     }
+    @Test
+    void testEquality_LitreToMillilitre() {
+
+        Quantity<VolumeUnit> litre =
+                new Quantity<>(1.0, VolumeUnit.LITRE);
+
+        Quantity<VolumeUnit> ml =
+                new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+
+        assertTrue(litre.equals(ml));
+    }
 }
