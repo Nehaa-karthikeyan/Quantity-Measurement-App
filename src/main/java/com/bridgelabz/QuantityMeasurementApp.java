@@ -2,117 +2,85 @@ package com.bridgelabz;
 
 public class QuantityMeasurementApp {
 
-    public static class Length {
-
-        private final double value;
-        private final LengthUnit unit;
-
-        private static final double EPSILON = 1e-6;
-
-        public Length(double value, LengthUnit unit) {
-
-            if (!Double.isFinite(value))
-                throw new IllegalArgumentException("Value must be finite");
-
-            if (unit == null)
-                throw new IllegalArgumentException("Unit cannot be null");
-
-            this.value = value;
-            this.unit = unit;
-        }
-
-        public double getValue() {
-            return value;
-        }
-
-        public LengthUnit getUnit() {
-            return unit;
-        }
+    public static void main(String[] args) {
 
         // ===============================
-        // UC5 Convert
+        // Length Operations
         // ===============================
-        public static double convert(double value,
-                                     LengthUnit source,
-                                     LengthUnit target) {
 
-            if (!Double.isFinite(value))
-                throw new IllegalArgumentException("Value must be finite");
+        Quantity<LengthUnit> length1 =
+                new Quantity<>(10.0, LengthUnit.FEET);
 
-            if (source == null || target == null)
-                throw new IllegalArgumentException("Units cannot be null");
+        Quantity<LengthUnit> length2 =
+                new Quantity<>(6.0, LengthUnit.INCH);
 
-            double baseValue = source.convertToBaseUnit(value);
-            return target.convertFromBaseUnit(baseValue);
-        }
+        System.out.println("Length Equality: " +
+                length1.equals(new Quantity<>(120.0, LengthUnit.INCH)));
 
-        public Length convertTo(LengthUnit target) {
-            double convertedValue = convert(this.value, this.unit, target);
-            return new Length(convertedValue, target);
-        }
+        System.out.println("Length Conversion: " +
+                length1.convertTo(LengthUnit.INCH));
 
-        // ===============================
-        // UC6 Add (implicit target)
-        // ===============================
-        public Length add(Length other) {
+        System.out.println("Length Addition: " +
+                length1.add(length2));
 
-            if (other == null)
-                throw new IllegalArgumentException("Second operand cannot be null");
+        System.out.println("Length Subtraction: " +
+                length1.subtract(length2));
 
-            double baseSum =
-                    this.unit.convertToBaseUnit(this.value)
-                            + other.unit.convertToBaseUnit(other.value);
+        System.out.println("Length Division: " +
+                length1.divide(new Quantity<>(2.0, LengthUnit.FEET)));
 
-            double result =
-                    this.unit.convertFromBaseUnit(baseSum);
 
-            return new Length(result, this.unit);
-        }
 
         // ===============================
-        // UC7 Add (explicit target)
+        // Weight Operations
         // ===============================
-        public Length add(Length other, LengthUnit targetUnit) {
 
-            if (other == null)
-                throw new IllegalArgumentException("Second operand cannot be null");
+        Quantity<WeightUnit> weight1 =
+                new Quantity<>(10.0, WeightUnit.KILOGRAM);
 
-            if (targetUnit == null)
-                throw new IllegalArgumentException("Target unit cannot be null");
+        Quantity<WeightUnit> weight2 =
+                new Quantity<>(5000.0, WeightUnit.GRAM);
 
-            double baseSum =
-                    this.unit.convertToBaseUnit(this.value)
-                            + other.unit.convertToBaseUnit(other.value);
+        System.out.println("Weight Equality: " +
+                weight1.equals(new Quantity<>(10000.0, WeightUnit.GRAM)));
 
-            double result =
-                    targetUnit.convertFromBaseUnit(baseSum);
+        System.out.println("Weight Conversion: " +
+                weight1.convertTo(WeightUnit.GRAM));
 
-            return new Length(result, targetUnit);
-        }
+        System.out.println("Weight Addition: " +
+                weight1.add(weight2));
+
+        System.out.println("Weight Subtraction: " +
+                weight1.subtract(weight2));
+
+        System.out.println("Weight Division: " +
+                weight1.divide(new Quantity<>(5.0, WeightUnit.KILOGRAM)));
+
+
 
         // ===============================
-        // Equality
+        // Volume Operations
         // ===============================
-        @Override
-        public boolean equals(Object obj) {
 
-            if (this == obj)
-                return true;
+        Quantity<VolumeUnit> volume1 =
+                new Quantity<>(5.0, VolumeUnit.LITRE);
 
-            if (!(obj instanceof Length))
-                return false;
+        Quantity<VolumeUnit> volume2 =
+                new Quantity<>(500.0, VolumeUnit.MILLILITRE);
 
-            Length other = (Length) obj;
+        System.out.println("Volume Equality: " +
+                volume1.equals(new Quantity<>(5000.0, VolumeUnit.MILLILITRE)));
 
-            double thisBase = unit.convertToBaseUnit(value);
-            double otherBase = other.unit.convertToBaseUnit(other.value);
+        System.out.println("Volume Conversion: " +
+                volume1.convertTo(VolumeUnit.MILLILITRE));
 
-            return Math.abs(thisBase - otherBase) < EPSILON;
-        }
+        System.out.println("Volume Addition: " +
+                volume1.add(volume2));
 
-        @Override
-        public String toString() {
-            return value + " " + unit;
-        }
+        System.out.println("Volume Subtraction: " +
+                volume1.subtract(volume2));
+
+        System.out.println("Volume Division: " +
+                volume1.divide(new Quantity<>(10.0, VolumeUnit.LITRE)));
     }
 }

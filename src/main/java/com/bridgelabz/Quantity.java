@@ -1,7 +1,5 @@
 package com.bridgelabz;
 
-import java.util.Objects;
-
 public class Quantity<U extends IMeasurable> {
 
     private final double value;
@@ -30,73 +28,161 @@ public class Quantity<U extends IMeasurable> {
     }
 
     // ===============================
-    // Conversion
+    // Convert
     // ===============================
+
     public Quantity<U> convertTo(U targetUnit) {
 
         if (targetUnit == null)
             throw new IllegalArgumentException("Target unit cannot be null");
 
         double baseValue = unit.convertToBaseUnit(value);
-        double converted = targetUnit.convertFromBaseUnit(baseValue);
+        double convertedValue = targetUnit.convertFromBaseUnit(baseValue);
 
-        return new Quantity<>(converted, targetUnit);
+        convertedValue = Math.round(convertedValue * 100.0) / 100.0;
+
+        return new Quantity<>(convertedValue, targetUnit);
     }
 
     // ===============================
-    // Addition (Implicit Target)
+    // Add (implicit target unit)
     // ===============================
+
     public Quantity<U> add(Quantity<U> other) {
 
         if (other == null)
-            throw new IllegalArgumentException("Second operand cannot be null");
+            throw new IllegalArgumentException("Quantity cannot be null");
+
+        if (this.unit.getClass() != other.unit.getClass())
+            throw new IllegalArgumentException("Different measurement categories");
 
         double baseSum =
-                unit.convertToBaseUnit(value)
-                        + other.unit.convertToBaseUnit(other.value);
+                unit.convertToBaseUnit(value) +
+                        other.unit.convertToBaseUnit(other.value);
 
         double result =
                 unit.convertFromBaseUnit(baseSum);
+
+        result = Math.round(result * 100.0) / 100.0;
 
         return new Quantity<>(result, unit);
     }
 
     // ===============================
-    // Addition (Explicit Target)
+    // Add (explicit target unit)
     // ===============================
+
     public Quantity<U> add(Quantity<U> other, U targetUnit) {
 
         if (other == null)
-            throw new IllegalArgumentException("Second operand cannot be null");
+            throw new IllegalArgumentException("Quantity cannot be null");
 
         if (targetUnit == null)
             throw new IllegalArgumentException("Target unit cannot be null");
 
+        if (this.unit.getClass() != other.unit.getClass())
+            throw new IllegalArgumentException("Different measurement categories");
+
         double baseSum =
-                unit.convertToBaseUnit(value)
-                        + other.unit.convertToBaseUnit(other.value);
+                unit.convertToBaseUnit(value) +
+                        other.unit.convertToBaseUnit(other.value);
 
         double result =
                 targetUnit.convertFromBaseUnit(baseSum);
+
+        result = Math.round(result * 100.0) / 100.0;
 
         return new Quantity<>(result, targetUnit);
     }
 
     // ===============================
+    // Subtract (implicit unit)
+    // ===============================
+
+    public Quantity<U> subtract(Quantity<U> other) {
+
+        if (other == null)
+            throw new IllegalArgumentException("Quantity cannot be null");
+
+        if (this.unit.getClass() != other.unit.getClass())
+            throw new IllegalArgumentException("Different measurement categories");
+
+        double baseResult =
+                unit.convertToBaseUnit(value) -
+                        other.unit.convertToBaseUnit(other.value);
+
+        double result =
+                unit.convertFromBaseUnit(baseResult);
+
+        result = Math.round(result * 100.0) / 100.0;
+
+        return new Quantity<>(result, unit);
+    }
+
+    // ===============================
+    // Subtract (explicit unit)
+    // ===============================
+
+    public Quantity<U> subtract(Quantity<U> other, U targetUnit) {
+
+        if (other == null)
+            throw new IllegalArgumentException("Quantity cannot be null");
+
+        if (targetUnit == null)
+            throw new IllegalArgumentException("Target unit cannot be null");
+
+        if (this.unit.getClass() != other.unit.getClass())
+            throw new IllegalArgumentException("Different measurement categories");
+
+        double baseResult =
+                unit.convertToBaseUnit(value) -
+                        other.unit.convertToBaseUnit(other.value);
+
+        double result =
+                targetUnit.convertFromBaseUnit(baseResult);
+
+        result = Math.round(result * 100.0) / 100.0;
+
+        return new Quantity<>(result, targetUnit);
+    }
+
+    // ===============================
+    // Divide
+    // ===============================
+
+    public double divide(Quantity<U> other) {
+
+        if (other == null)
+            throw new IllegalArgumentException("Quantity cannot be null");
+
+        if (this.unit.getClass() != other.unit.getClass())
+            throw new IllegalArgumentException("Different measurement categories");
+
+        double thisBase = unit.convertToBaseUnit(value);
+        double otherBase = other.unit.convertToBaseUnit(other.value);
+
+        if (otherBase == 0)
+            throw new ArithmeticException("Division by zero");
+
+        return thisBase / otherBase;
+    }
+
+    // ===============================
     // Equality
     // ===============================
+
     @Override
     public boolean equals(Object obj) {
 
         if (this == obj)
             return true;
 
-        if (obj == null || getClass() != obj.getClass())
+        if (!(obj instanceof Quantity<?>))
             return false;
 
         Quantity<?> other = (Quantity<?>) obj;
 
-        if (!unit.getClass().equals(other.unit.getClass()))
+        if (this.unit.getClass() != other.unit.getClass())
             return false;
 
         double thisBase = unit.convertToBaseUnit(value);
@@ -107,8 +193,7 @@ public class Quantity<U extends IMeasurable> {
 
     @Override
     public int hashCode() {
-        double baseValue = unit.convertToBaseUnit(value);
-        return Objects.hash(baseValue, unit.getClass());
+        return Double.hashCode(unit.convertToBaseUnit(value));
     }
 
     @Override

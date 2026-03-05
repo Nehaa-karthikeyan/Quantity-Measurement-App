@@ -184,4 +184,28 @@ public class QuantityMeasurementAppTest {
 
         assertTrue(litre.equals(ml));
     }
+    @Test
+    void testSubtraction_FeetMinusFeet() {
+
+        Quantity<LengthUnit> a =
+                new Quantity<>(10.0, LengthUnit.FEET);
+
+        Quantity<LengthUnit> b =
+                new Quantity<>(5.0, LengthUnit.FEET);
+
+        Quantity<LengthUnit> result = a.subtract(b);
+
+        assertEquals(5.0, result.getValue(), EPSILON);
+    }
+    @Test
+    void testDivision_FeetByFeet() {
+
+        Quantity<LengthUnit> a =
+                new Quantity<>(10.0, LengthUnit.FEET);
+
+        Quantity<LengthUnit> b =
+                new Quantity<>(2.0, LengthUnit.FEET);
+
+        assertEquals(5.0, a.divide(b), EPSILON);
+    }
 }
