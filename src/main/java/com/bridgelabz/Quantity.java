@@ -28,7 +28,7 @@ public class Quantity<U extends IMeasurable> {
     }
 
     // ===============================
-    // ENUM FOR ARITHMETIC OPERATIONS
+    // ARITHMETIC OPERATIONS ENUM
     // ===============================
     private enum ArithmeticOperation {
 
@@ -79,14 +79,17 @@ public class Quantity<U extends IMeasurable> {
     // ===============================
     // CORE HELPER METHOD (DRY)
     // ===============================
-    private double performBaseArithmetic(
-            Quantity<U> other,
-            ArithmeticOperation operation) {
+    private double performBaseArithmetic(Quantity<U> other,
+                                         ArithmeticOperation operation) {
 
-        double baseThis = unit.convertToBaseUnit(value);
-        double baseOther = other.unit.convertToBaseUnit(other.value);
+        // UC14 validation for unsupported operations (Temperature)
+        unit.validateOperationSupport(operation.name());
+        other.unit.validateOperationSupport(operation.name());
 
-        return operation.compute(baseThis, baseOther);
+        double base1 = unit.convertToBaseUnit(value);
+        double base2 = other.unit.convertToBaseUnit(other.value);
+
+        return operation.compute(base1, base2);
     }
 
     private double roundToTwoDecimals(double val) {
@@ -186,16 +189,16 @@ public class Quantity<U extends IMeasurable> {
         if (this == obj)
             return true;
 
-        if (!(obj instanceof Quantity<?> other))
+        if (!(obj instanceof Quantity<?>))
             return false;
+
+        Quantity<?> other = (Quantity<?>) obj;
 
         if (!unit.getClass().equals(other.unit.getClass()))
             return false;
 
         double baseThis = unit.convertToBaseUnit(value);
-        double baseOther =
-                ((IMeasurable) other.unit)
-                        .convertToBaseUnit(other.value);
+        double baseOther = other.unit.convertToBaseUnit(other.value);
 
         return Math.abs(baseThis - baseOther) < EPSILON;
     }
